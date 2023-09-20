@@ -26,6 +26,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.ead.authuser.utils.DateUtils.getLocalDateTimeNow;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -38,7 +40,13 @@ public class UserController {
     @GetMapping
     public ResponseEntity<Page<UserModel>> getAll(SpecificationTemplate.UserSpec spec,
                                                   @PageableDefault(page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.findAll(pageable, spec));
+        final Page<UserModel> userModelPage = userService.findAll(pageable, spec);
+        if (!userModelPage.isEmpty()) {
+            for (UserModel userModel : userModelPage.toList()) {
+                userModel.add(linkTo(methodOn(UserController.class).getById(userModel.getUserId())).withSelfRel());
+            }
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(userModelPage);
     }
 
     @GetMapping("/{id}")
