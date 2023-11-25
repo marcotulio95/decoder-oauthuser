@@ -5,6 +5,7 @@ import com.ead.authuser.models.UserModel;
 import com.ead.authuser.services.UserService;
 import com.ead.authuser.specifications.SpecificationTemplate;
 import com.fasterxml.jackson.annotation.JsonView;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +31,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
+@Log4j2
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping("/users")
 public class UserController {
@@ -38,8 +40,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public ResponseEntity<Page<UserModel>> getAll(SpecificationTemplate.UserSpec spec,
-                                                  @PageableDefault(page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable) {
+    public ResponseEntity<Page<UserModel>> getAll(SpecificationTemplate.UserSpec spec, @PageableDefault(page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable) {
         final Page<UserModel> userModelPage = userService.findAll(pageable, spec);
         if (!userModelPage.isEmpty()) {
             for (UserModel userModel : userModelPage.toList()) {
@@ -67,9 +68,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateUser(@PathVariable(value = "id") UUID id,
-                                             @RequestBody @Validated(UserDto.UserView.UserPut.class)
-                                             @JsonView(UserDto.UserView.UserPut.class) UserDto userDto) {
+    public ResponseEntity<Object> updateUser(@PathVariable(value = "id") UUID id, @RequestBody @Validated(UserDto.UserView.UserPut.class) @JsonView(UserDto.UserView.UserPut.class) UserDto userDto) {
         final Optional<UserModel> userModelOptional = userService.findById(id);
         if (userModelOptional.isPresent()) {
             var userModel = userModelOptional.get();
@@ -85,8 +84,8 @@ public class UserController {
     }
 
     @PutMapping("/{id}/password")
-    public ResponseEntity<Object> updateUserPassword(@PathVariable(value = "id") UUID id,
-                                                     @RequestBody @Validated(UserDto.UserView.PasswordPut.class) @JsonView(UserDto.UserView.PasswordPut.class) UserDto userDto) {
+    public ResponseEntity<Object> updateUserPassword(@PathVariable(value = "id") UUID id, @RequestBody @Validated(UserDto.UserView.PasswordPut.class) @JsonView(UserDto.UserView.PasswordPut.class) UserDto userDto) {
+        log.debug("PUT updateUser userDto received {}", userDto.toString());
         final Optional<UserModel> userModelOptional = userService.findById(id);
         if (!userModelOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("user not found");
@@ -99,12 +98,13 @@ public class UserController {
         userModel.setPassword(userModel.getPassword());
         userModel.setLastUpdateDate(getLocalDateTimeNow());
         userService.save(userModel);
+        log.debug("PUT updatedUser userId saved {}", userModel.getUserId());
+        log.info("PUT updatedUser successfully for userId {}", userModel.getUserId());
         return ResponseEntity.status(HttpStatus.OK).body("Password updated successfully");
     }
 
     @PutMapping("/{id}/image")
-    public ResponseEntity<Object> updateUserImage(@PathVariable(value = "id") UUID id,
-                                                  @RequestBody @Validated(UserDto.UserView.ImagePut.class) @JsonView(UserDto.UserView.ImagePut.class) UserDto userDto) {
+    public ResponseEntity<Object> updateUserImage(@PathVariable(value = "id") UUID id, @RequestBody @Validated(UserDto.UserView.ImagePut.class) @JsonView(UserDto.UserView.ImagePut.class) UserDto userDto) {
         final Optional<UserModel> userModelOptional = userService.findById(id);
         if (!userModelOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("user not found");
