@@ -1,6 +1,6 @@
 package com.ead.authuser.controllers;
 
-import com.ead.authuser.dtos.UserDto;
+import com.ead.authuser.dtos.UserDTO;
 import com.ead.authuser.models.UserModel;
 import com.ead.authuser.services.UserService;
 import com.ead.authuser.specifications.SpecificationTemplate;
@@ -74,7 +74,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateUser(@PathVariable(value = "id") UUID id, @RequestBody @Validated(UserDto.UserView.UserPut.class) @JsonView(UserDto.UserView.UserPut.class) UserDto userDto) {
+    public ResponseEntity<Object> updateUser(@PathVariable(value = "id") UUID id, @RequestBody @Validated(UserDTO.UserView.UserPut.class) @JsonView(UserDTO.UserView.UserPut.class) UserDTO userDto) {
         final Optional<UserModel> userModelOptional = userService.findById(id);
         if (userModelOptional.isPresent()) {
             var userModel = userModelOptional.get();
@@ -90,7 +90,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}/password")
-    public ResponseEntity<Object> updateUserPassword(@PathVariable(value = "id") UUID id, @RequestBody @Validated(UserDto.UserView.PasswordPut.class) @JsonView(UserDto.UserView.PasswordPut.class) UserDto userDto) {
+    public ResponseEntity<Object> updateUserPassword(@PathVariable(value = "id") UUID id, @RequestBody @Validated(UserDTO.UserView.PasswordPut.class) @JsonView(UserDTO.UserView.PasswordPut.class) UserDTO userDto) {
         log.debug("PUT updateUser userDto received {}", userDto.toString());
         final Optional<UserModel> userModelOptional = userService.findById(id);
         if (!userModelOptional.isPresent()) {
@@ -110,7 +110,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}/image")
-    public ResponseEntity<Object> updateUserImage(@PathVariable(value = "id") UUID id, @RequestBody @Validated(UserDto.UserView.ImagePut.class) @JsonView(UserDto.UserView.ImagePut.class) UserDto userDto) {
+    public ResponseEntity<Object> updateUserImage(@PathVariable(value = "id") UUID id, @RequestBody @Validated(UserDTO.UserView.ImagePut.class) @JsonView(UserDTO.UserView.ImagePut.class) UserDTO userDto) {
         final Optional<UserModel> userModelOptional = userService.findById(id);
         if (!userModelOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("user not found");

@@ -1,6 +1,6 @@
 package com.ead.authuser.controllers;
 
-import com.ead.authuser.dtos.UserDto;
+import com.ead.authuser.dtos.UserDTO;
 import com.ead.authuser.enums.UserStatus;
 import com.ead.authuser.enums.UserType;
 import com.ead.authuser.models.UserModel;
@@ -30,7 +30,7 @@ public class AuthenticationController {
     private UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<Object> registerUser(@RequestBody @Validated(UserDto.UserView.RegistrationPost.class) @JsonView(UserDto.UserView.RegistrationPost.class) UserDto userDTO) {
+    public ResponseEntity<Object> registerUser(@RequestBody @Validated(UserDTO.UserView.RegistrationPost.class) @JsonView(UserDTO.UserView.RegistrationPost.class) UserDTO userDTO) {
         log.debug("POST registerUser userDto received {}", userDTO.toString());
         if (userService.findByUserName(userDTO.getUsername())) {
             log.warn("username {} already exists", userDTO.getUsername());
