@@ -63,5 +63,5 @@ public class UserModel extends RepresentationModel<UserModel> {
     private LocalDateTime lastUpdateDate;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private Set<UserCourseModel> userCourseModel;
+    private Set<UserCourseModel> userCourses;
 }

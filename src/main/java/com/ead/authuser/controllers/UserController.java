@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
@@ -40,8 +41,13 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public ResponseEntity<Page<UserModel>> getAll(SpecificationTemplate.UserSpec spec, @PageableDefault(page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable) {
-        final Page<UserModel> userModelPage = userService.findAll(pageable, spec);
+    public ResponseEntity<Page<UserModel>> getAll(SpecificationTemplate.UserSpec spec, @PageableDefault(page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable, @RequestParam(required = false) UUID courseId) {
+        Page<UserModel> userModelPage = null;
+        if (courseId != null) {
+            userModelPage = userService.findAll(pageable, SpecificationTemplate.userCourseId(courseId).and(spec));
+        } else {
+            userModelPage = userService.findAll(pageable, spec);
+        }
         if (!userModelPage.isEmpty()) {
             for (UserModel userModel : userModelPage.toList()) {
                 userModel.add(linkTo(methodOn(UserController.class).getById(userModel.getUserId())).withSelfRel());
