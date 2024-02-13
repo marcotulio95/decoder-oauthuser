@@ -2,9 +2,10 @@ package com.ead.authuser.clients;
 
 import com.ead.authuser.dtos.CourseDTO;
 import com.ead.authuser.dtos.ResponsePageDTO;
-import com.ead.authuser.utils.UtilsService;
+import com.ead.authuser.utils.ServiceUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,14 +19,16 @@ import java.util.UUID;
 
 @Component
 @Log4j2
-public class UserClient {
-    private final static String REQUEST_URI = "http://localhost:8088";
+public class CourseClient {
+
+    @Value("${ead.api.url.course}")
+    private String REQUEST_URI;
     @Autowired
     private RestTemplate restTemplate;
 
     public Page<CourseDTO> getAllCoursesByUser(UUID userId, Pageable pageable) {
         ResponseEntity<ResponsePageDTO<CourseDTO>> response = null;
-        final String requestUrl = REQUEST_URI + UtilsService.createUrlGetAllCoursesByUser(userId, pageable);
+        final String requestUrl = REQUEST_URI + ServiceUtils.createUrlGetAllCoursesByUser(userId, pageable);
         log.debug("RequestUrl {}", requestUrl);
         log.info("RequestUrl {}", requestUrl);
         try {
